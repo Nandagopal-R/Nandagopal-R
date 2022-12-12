@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 16.11.2022 16:28:42
+// Create Date: 30.11.2022 16:06:46
 // Design Name: 
-// Module Name: log
+// Module Name: pow
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,16 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module log(clk);
-
-//input [15:0] in;
-//reg [15:0] in;
-input clk;
+module pow(clk);
 wire [15:0] in;
 reg [15:0] op;
+reg [15:0] a[11:0],b[11:0],c[10:0],d,in1;
+reg [15:0] y;
+integer i,l;
+input clk;
 
-reg [15:0] a [13:0],b [13:0],c[13:0];
-integer i=0,l;
 
 vio_0 in_out_name (
   .clk(clk),                // input wire clk
@@ -37,7 +35,7 @@ vio_0 in_out_name (
   .probe_out0(in)  // output wire [15 : 0] probe_out0
 );
 
-always
+always @(posedge clk)
 begin
 
 a[0]=16'b00000000_00000000;   //0
@@ -78,17 +76,40 @@ c[7]=16'b00010000_01001000;  //16.2849
 c[8]=16'b01000000_00000000;  // 64
 c[9]=16'b00010000_01001000;  //16.2849c[0]=16'b01000000_00000000;  // 64
 c[10]=16'b00010000_01001000;  //16.2849
+
+in1={8'b0,in[7:0]};
+
 end
 
 always @(posedge clk)
 begin
-//in=16'b00000000_00010111;  //0.09
+
+if(in[15:8]==0)
+d[15:0]=16'b00000001_0000000;
+if(in[15:8]==1)
+d[15:0]=16'b00000010_0000000;
+if(in[15:8]==2)
+d[15:0]=16'b00000100_0000000;
+if(in[15:8]==3)
+d[15:0]=16'b00001000_0000000;
+if(in[15:8]==4)
+d[15:0]=16'b00010000_0000000;
+if(in[15:8]==5)
+d[15:0]=16'b00100000_0000000;
+if(in[15:8]==6)
+d[15:0]=16'b01000000_0000000;
+if(in[15:8]==2)
+d[15:0]=16'b10000000_0000000;
+
 for(i=0;i<=13;i=i+1)
 begin
-if(in>=a[i] && in<a[i+1])
+if(in1>=a[i] && in1<a[i+1])
 l=i;
 end
-op=b[l]-c[l]*a[l]+8;
+
+y=(b[l+1]-b[l])*(in1-a[l])/(a[l+1]-a[l])+b[l];
+op=d*y;
+
 end
 
 endmodule
